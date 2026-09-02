@@ -1,0 +1,98 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:7f3c2a18-9d4e-4b1a-bc77-2e6f0a9d5c41",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-06-14T00:00:00Z",
+    "lifecycles": [{ "phase": "operations" }],
+    "component": {
+      "type": "application",
+      "bom-ref": "neo-platform",
+      "name": "neo-platform",
+      "version": "0.1.0",
+      "description": "Neo AI Control platform (neocontrol.ai) — assessment, red-team, and vendor AI review engine.",
+      "supplier": { "name": "Neo", "url": ["https://neocontrol.ai"] }
+    },
+    "authors": [{ "name": "Ankush Chowdhary" }]
+  },
+  "components": [
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model/claude-opus-4-6",
+      "name": "Claude Opus 4.6",
+      "publisher": "Anthropic",
+      "description": "Deep-reasoning engine model (ENGINE_MODELS.deep): assessment reasoning, red-team generation, vendor AI risk evaluation.",
+      "externalReferences": [
+        { "type": "website", "url": "https://www.anthropic.com" },
+        { "type": "documentation", "url": "https://docs.claude.com" }
+      ],
+      "modelCard": {
+        "modelParameters": {
+          "task": "text-generation",
+          "modelArchitecture": "Transformer (proprietary, Anthropic)"
+        },
+        "considerations": {
+          "useCases": [
+            "AI control assessment reasoning",
+            "red-team / adversarial test generation",
+            "vendor AI risk classification and scoring"
+          ],
+          "technicalLimitations": [
+            "Has a knowledge cutoff and can produce errors; engine outputs are reviewed by a human in the decision board before action."
+          ],
+          "ethicalConsiderations": [
+            {
+              "name": "Data handling",
+              "mitigationStrategy": "First-party Anthropic API only; customer inputs are not used to train models. Third-party model routing (Bedrock/Vertex) and ZDR paths that would weaken these assurances are avoided for the engine."
+            }
+          ]
+        },
+        "properties": [
+          { "name": "model-id", "value": "claude-opus-4-6" },
+          { "name": "hosting", "value": "Anthropic first-party API" },
+          { "name": "data-retention", "value": "no-training-on-inputs" }
+        ]
+      }
+    },
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model/claude-sonnet-4-6",
+      "name": "Claude Sonnet 4.6",
+      "publisher": "Anthropic",
+      "description": "Fast engine model (ENGINE_MODELS.fast): use-case classification, risk tiering, question-pack generation, product lookup.",
+      "externalReferences": [{ "type": "website", "url": "https://www.anthropic.com" }],
+      "modelCard": {
+        "modelParameters": {
+          "task": "text-generation",
+          "modelArchitecture": "Transformer (proprietary, Anthropic)"
+        },
+        "considerations": {
+          "useCases": [
+            "use-case classification",
+            "risk tiering",
+            "vendor question-pack generation",
+            "product / vendor typeahead lookup"
+          ],
+          "ethicalConsiderations": [
+            {
+              "name": "Data handling",
+              "mitigationStrategy": "First-party Anthropic API only; customer inputs are not used to train models."
+            }
+          ]
+        },
+        "properties": [
+          { "name": "model-id", "value": "claude-sonnet-4-6" },
+          { "name": "hosting", "value": "Anthropic first-party API" },
+          { "name": "data-retention", "value": "no-training-on-inputs" }
+        ]
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "neo-platform",
+      "dependsOn": ["model/claude-opus-4-6", "model/claude-sonnet-4-6"]
+    }
+  ]
+}

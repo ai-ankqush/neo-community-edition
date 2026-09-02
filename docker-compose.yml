@@ -1,0 +1,47 @@
+# Neo Community Edition — one-command deploy: `docker compose up --build`
+# Brings up Postgres + the app, runs migrations (+ optional sample seed) on boot.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: neo
+      POSTGRES_PASSWORD: neo
+      POSTGRES_DB: neo
+    volumes:
+      - neo-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U neo -d neo"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://neo:neo@db:5432/neo
+      AUTH_PROVIDER: builtin
+      NEO_EDITION: community
+      INNGEST_DEV: http://inngest:8288   # send events to the bundled Inngest service
+      # override these in a .env next to this file (compose reads it automatically):
+      SKY_SESSION_SECRET: ${SKY_SESSION_SECRET:-please-change-me-0000000000000000000000000000}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports:
+      - "3000:3000"
+    command: sh -c "node scripts/ce-migrate.mjs && (node scripts/ce-seed-load.mjs || true) && npm run start"
+
+  # Background job runner for the assessment engine (classify/questions/artifacts/red-team).
+  inngest:
+    image: inngest/inngest:latest
+    depends_on:
+      - app
+    command: inngest dev -u http://app:3000/api/inngest --no-discovery
+    ports:
+      - "8288:8288"
+
+volumes:
+  neo-db:

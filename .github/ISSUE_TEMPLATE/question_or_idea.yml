@@ -1,0 +1,20 @@
+name: Question or idea
+description: Ask how something works, or propose an improvement.
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For setup/deployment steps, check [DEPLOY.md](https://github.com/ai-ankqush/neo-community-edition/blob/main/DEPLOY.md) first — it may already cover it.
+  - type: textarea
+    id: body
+    attributes:
+      label: Your question or idea
+      description: What are you trying to do, or what would you like to see?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context (optional)
+      description: How you're deploying, what you're assessing, anything that helps.

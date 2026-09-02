@@ -1,0 +1,60 @@
+name: Bug report
+description: Something isn't working in Neo Community Edition.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Neo CE. Please don't paste API keys, tokens, or `.env` contents.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what actually occurred?
+      placeholder: When I run an assessment, the Controls stage fails with…
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Sign up as the first admin
+        2. Create a use case, set the stack
+        3. Run the engine → …
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: How are you running it?
+      options:
+        - Docker Compose (local)
+        - Docker on a VM / EC2
+        - ECS Fargate / Kubernetes
+        - Node directly (npm start / dev)
+        - Other (describe below)
+    validations:
+      required: true
+  - type: dropdown
+    id: model-provider
+    attributes:
+      label: Model provider
+      options:
+        - Anthropic API
+        - Amazon Bedrock
+        - Not sure / not configured yet
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Version / environment
+      description: CE commit or release, OS, Node/Docker version, Postgres version.
+      placeholder: "commit abc123 · macOS 15 · Docker 27 · Postgres 16"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: App or job-runner output. Redact any secrets first.
+      render: shell

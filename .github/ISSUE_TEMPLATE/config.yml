@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Deployment & setup help
+    url: https://github.com/ai-ankqush/neo-community-edition/blob/main/DEPLOY.md
+    about: Getting a model key, Docker / EC2 / ECS Fargate, first run, and troubleshooting.
+  - name: Email the Neo team
+    url: mailto:neo@neocontrol.ai
+    about: For anything sensitive, security-related, or account-specific.

@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Console theme tokens. Dark is the default; html.theme-light overrides.
+   Only structural neutrals are themed — semantic colors (blue accent,
+   green/amber/red status, tier colors) read correctly on both. */
+:root {
+  --bg: #0b0c10;
+  --bg-elevated: #0a0b0e;
+  --panel: #0d0e12;
+  --surface: #111318;
+  --surface-2: #13141a;
+  --panel-hover: #16181f;
+  --row: #15171d;
+  --border: #1e2028;
+  --border-strong: #2d3040;
+  --text: #e2e8f0;
+  --muted: #8892a4;
+  --faint: #6b7280;
+  --good: #22c55e;
+}
+
+/* White-label light theme — partner sets NEXT_PUBLIC_BRAND_THEME=light; applied via
+   data-theme on <html> (see src/app/layout.tsx). Overrides the dark palette above. */
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-elevated: #ffffff;
+  --panel: #f1f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --panel-hover: #e2e8f0;
+  --row: #f8fafc;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text: #0f172a;
+  --muted: #64748b;
+  --faint: #94a3b8;
+  --good: #16a34a;
+}
+
+html.theme-light {
+  --bg: #eef1f5;
+  --bg-elevated: #ffffff;
+  --panel: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f7f9fc;
+  --panel-hover: #e7ebf1;
+  --row: #eef1f5;
+  --border: #dfe3ea;
+  --border-strong: #cbd3df;
+  --text: #0f172a;
+  --muted: #51607a;
+  --faint: #64748b;
+  --good: #15803d;
+}
+
+@keyframes neoNudgeIn { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }

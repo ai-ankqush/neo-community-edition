@@ -1,0 +1,18 @@
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+*.pem
+.env
+.env.local
+.env.*.local
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# logo processing artifacts (local only)
+public/_logo_preview*.png
+public/neo-logo-original.png
+.env*
+!.env.example

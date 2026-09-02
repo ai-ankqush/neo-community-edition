@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Neo AI Control - read-only cross-account verification role. Lets Neo verify control
+  evidence (audit logging, IAM/KMS/S3 posture, GuardDuty/Config, and Bedrock AI inventory)
+  WITHOUT any standing access keys. Neo assumes this role with an External ID; the role is
+  strictly read-only (no write/delete actions anywhere). Deploy once per account, or org-wide
+  via a CloudFormation StackSet from the Organizations management account so every current and
+  future member account inherits it (see neo-aws-org-setup.md).
+
+Parameters:
+  NeoAccountId:
+    Type: String
+    Description: Neo's AWS account id (from the Neo Integrations page).
+    AllowedPattern: "^[0-9]{12}$"
+  ExternalId:
+    Type: String
+    Description: A unique secret shown in Neo when you start the AWS connection.
+    MinLength: 8
+    NoEcho: true
+  VerificationMode:
+    Type: String
+    Description: >
+      Basic = AWS-managed SecurityAudit only (fastest to approve). Enhanced = also attach a
+      small Neo supplemental read-only policy for AI services (Bedrock model/guardrail
+      inventory) that SecurityAudit does not yet cover. Neo recommends Enhanced.
+    AllowedValues: ["Basic", "Enhanced"]
+    Default: "Enhanced"
+
+Conditions:
+  IsEnhanced: !Equals [!Ref VerificationMode, "Enhanced"]
+
+Resources:
+  NeoReadOnlyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: NeoControlReadOnlyVerifierRole
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${NeoAccountId}:root"
+            Action: "sts:AssumeRole"
+            Condition:
+              StringEquals:
+                "sts:ExternalId": !Ref ExternalId
+      # Basic posture: AWS-managed, auto-maintained read-only policies. Neo never maintains a
+      # per-service permission list — AWS keeps SecurityAudit current as new services ship.
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/SecurityAudit"
+        - "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+      # Enhanced supplemental: read-only AI-service reads SecurityAudit lags on (Bedrock).
+      Policies:
+        - !If
+          - IsEnhanced
+          - PolicyName: NeoControlSupplementalReadOnly
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Sid: BedrockReadOnlyInventory
+                  Effect: Allow
+                  Action:
+                    - "bedrock:ListFoundationModels"
+                    - "bedrock:GetFoundationModel"
+                    - "bedrock:ListCustomModels"
+                    - "bedrock:GetCustomModel"
+                    - "bedrock:ListProvisionedModelThroughputs"
+                    - "bedrock:ListGuardrails"
+                    - "bedrock:GetGuardrail"
+                    - "bedrock:ListAgents"
+                    - "bedrock:GetModelInvocationLoggingConfiguration"
+                  Resource: "*"
+          - !Ref "AWS::NoValue"
+
+Outputs:
+  RoleArn:
+    Description: Paste this into Neo as the Role ARN.
+    Value: !GetAtt NeoReadOnlyRole.Arn
+  ExternalIdEcho:
+    Description: The external id you entered (also stored in Neo).
+    Value: !Ref ExternalId
+  VerificationMode:
+    Description: The mode this role was deployed with.
+    Value: !Ref VerificationMode
